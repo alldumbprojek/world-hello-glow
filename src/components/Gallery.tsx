@@ -176,7 +176,7 @@ export const Gallery = () => {
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
             Momen <span className="text-gradient-gold">Istimewa</span>
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-white">
             Lihat keindahan suasana dan kelezatan hidangan di Rasa Nusantara
           </p>
         </div>
