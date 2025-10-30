@@ -52,6 +52,42 @@ const menuItems = [
     price: "Rp 60.000",
     image: ayamgorengImage,
   },
+  {
+    name: "Nasi Uduk Betawi",
+    description: "Nasi gurih khas Betawi dengan lauk pelengkap tradisional",
+    price: "Rp 55.000",
+    image: nasigorengImage,
+  },
+  {
+    name: "Ikan Bakar Sambal Matah",
+    description: "Ikan segar bakar dengan sambal matah khas Bali yang pedas",
+    price: "Rp 95.000",
+    image: sateImage,
+  },
+  {
+    name: "Rawon Setan",
+    description: "Sup daging hitam khas Jawa Timur dengan bumbu kluwak yang kaya",
+    price: "Rp 70.000",
+    image: rendangImage,
+  },
+  {
+    name: "Pecel Lele",
+    description: "Lele goreng crispy dengan sambal dan lalapan segar",
+    price: "Rp 40.000",
+    image: ayamgorengImage,
+  },
+  {
+    name: "Bakso Malang Spesial",
+    description: "Bakso kenyal dengan aneka isian dan kuah kaldu sapi yang gurih",
+    price: "Rp 45.000",
+    image: sotoImage,
+  },
+  {
+    name: "Pecel Madiun",
+    description: "Sayuran rebus dengan bumbu pecel kacang khas Madiun yang gurih",
+    price: "Rp 35.000",
+    image: gadogadoImage,
+  },
 ];
 
 export const MenuHighlight = () => {
@@ -60,6 +96,17 @@ export const MenuHighlight = () => {
   const gridRef = useRef<HTMLDivElement>(null);
   const [selectedItem, setSelectedItem] = useState<typeof menuItems[0] | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleItemClick = (item: typeof menuItems[0]) => {
     setSelectedItem(item);
@@ -226,7 +273,7 @@ export const MenuHighlight = () => {
 
         {/* Menu Grid */}
         <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-          {menuItems.map((item, index) => (
+          {(isMobile && !showAll ? menuItems.slice(0, 6) : menuItems).map((item, index) => (
             <Card
               key={index}
               onClick={() => handleItemClick(item)}
@@ -268,6 +315,20 @@ export const MenuHighlight = () => {
             </Card>
           ))}
         </div>
+
+        {/* Load More Button for Mobile */}
+        {isMobile && !showAll && menuItems.length > 6 && (
+          <div className="flex justify-center mt-8">
+            <Button
+              onClick={() => setShowAll(true)}
+              variant="outline"
+              size="lg"
+              className="bg-card/50 backdrop-blur-sm border-primary/50 hover:bg-primary/10"
+            >
+              Tampilkan Lebih Banyak
+            </Button>
+          </div>
+        )}
 
         {/* Modal */}
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
