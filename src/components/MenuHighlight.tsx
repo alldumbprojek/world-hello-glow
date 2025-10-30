@@ -7,13 +7,8 @@ import sateImage from "@/assets/menu-sate.jpg";
 import gadogadoImage from "@/assets/menu-gadogado.jpg";
 import sotoImage from "@/assets/menu-soto.jpg";
 import ayamgorengImage from "@/assets/menu-ayamgoreng.jpg";
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useState } from "react";
 import { ShoppingCart, Star } from "lucide-react";
-
-// Register ScrollTrigger
-gsap.registerPlugin(ScrollTrigger);
 
 const menuItems = [
   {
@@ -52,14 +47,48 @@ const menuItems = [
     price: "Rp 60.000",
     image: ayamgorengImage,
   },
+  {
+    name: "Nasi Kuning Komplit",
+    description: "Nasi kuning dengan lauk lengkap ayam, telur, dan perkedel",
+    price: "Rp 55.000",
+    image: nasigorengImage,
+  },
+  {
+    name: "Rawon Surabaya",
+    description: "Sup daging sapi dengan kuah hitam khas Jawa Timur",
+    price: "Rp 70.000",
+    image: rendangImage,
+  },
+  {
+    name: "Pecel Lele",
+    description: "Lele goreng crispy dengan sambal dan lalapan segar",
+    price: "Rp 40.000",
+    image: ayamgorengImage,
+  },
+  {
+    name: "Nasi Uduk Betawi",
+    description: "Nasi gurih dengan ayam goreng, telur balado, dan kerupuk",
+    price: "Rp 50.000",
+    image: nasigorengImage,
+  },
+  {
+    name: "Gulai Kambing",
+    description: "Daging kambing empuk dengan kuah gulai rempah tradisional",
+    price: "Rp 90.000",
+    image: rendangImage,
+  },
+  {
+    name: "Ikan Bakar Sambal Matah",
+    description: "Ikan segar bakar dengan sambal matah khas Bali",
+    price: "Rp 75.000",
+    image: sateImage,
+  },
 ];
 
 export const MenuHighlight = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
   const [selectedItem, setSelectedItem] = useState<typeof menuItems[0] | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [visibleItems, setVisibleItems] = useState(6);
 
   const handleItemClick = (item: typeof menuItems[0]) => {
     setSelectedItem(item);
@@ -73,299 +102,17 @@ export const MenuHighlight = () => {
     }
   };
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Header animation with dramatic entrance
-      const headerElements = headerRef.current?.children;
-      if (headerElements) {
-        gsap.set(headerElements, { y: 50, opacity: 0, scale: 0.9 });
-        gsap.to(headerElements, {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1,
-          stagger: 0.15,
-          ease: "back.out(1.4)",
-          scrollTrigger: {
-            trigger: headerRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse"
-          }
-        });
-      }
+  const handleLoadMore = () => {
+    setVisibleItems(prev => Math.min(prev + 6, menuItems.length));
+  };
 
-      // Advanced grid stagger animation with 3D effects
-      const cards = gridRef.current?.children;
-      if (cards) {
-        // Set initial state with 3D perspective
-        gsap.set(cards, { 
-          y: 80, 
-          opacity: 0, 
-          scale: 0.8,
-          rotationX: -20,
-          transformPerspective: 1000
-        });
-        
-        // Animate in with smooth 3D entrance
-        gsap.to(cards, {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          rotationX: 0,
-          duration: 1.2,
-          stagger: {
-            each: 0.12,
-            from: "start",
-            ease: "power2.out"
-          },
-          ease: "back.out(1.2)",
-          scrollTrigger: {
-            trigger: gridRef.current,
-            start: "top 75%",
-            toggleActions: "play none none reverse"
-          }
-        });
-
-        // Parallax effect on scroll for each card
-        Array.from(cards).forEach((card, index) => {
-          gsap.to(card, {
-            y: -30,
-            ease: "none",
-            scrollTrigger: {
-              trigger: card,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 1.5,
-            }
-          });
-        });
-
-        // Enhanced hover/touch interactions
-        Array.from(cards).forEach((card, index) => {
-          const cardElement = card as HTMLElement;
-          const image = cardElement.querySelector('img');
-          const overlay = cardElement.querySelector('.absolute.inset-0');
-          const priceBadge = cardElement.querySelector('.absolute.bottom-2');
-          const starIcon = cardElement.querySelector('.absolute.top-2');
-
-          // Mouse enter with 3D tilt and smooth lift
-          const handleMouseEnter = (e: MouseEvent) => {
-            gsap.to(cardElement, {
-              y: -15,
-              scale: 1.02,
-              duration: 0.5,
-              ease: "power2.out",
-              boxShadow: "0 20px 40px rgba(212, 175, 55, 0.3)"
-            });
-            
-            if (image) {
-              gsap.to(image, {
-                scale: 1.15,
-                rotation: 2,
-                duration: 0.8,
-                ease: "power2.out"
-              });
-            }
-            
-            if (overlay) {
-              gsap.to(overlay, {
-                opacity: 0.95,
-                duration: 0.4
-              });
-            }
-
-            if (priceBadge) {
-              gsap.to(priceBadge, {
-                scale: 1.1,
-                y: -3,
-                duration: 0.3,
-                ease: "back.out(2)"
-              });
-            }
-
-            if (starIcon) {
-              gsap.to(starIcon, {
-                scale: 1.2,
-                rotation: 360,
-                duration: 0.5,
-                ease: "back.out(2)"
-              });
-            }
-          };
-
-          // Mouse leave with smooth return
-          const handleMouseLeave = () => {
-            gsap.to(cardElement, {
-              y: 0,
-              scale: 1,
-              duration: 0.5,
-              ease: "power2.out",
-              boxShadow: "0 0 0 rgba(0, 0, 0, 0)"
-            });
-            
-            if (image) {
-              gsap.to(image, {
-                scale: 1,
-                rotation: 0,
-                duration: 0.8,
-                ease: "power2.out"
-              });
-            }
-            
-            if (overlay) {
-              gsap.to(overlay, {
-                opacity: 0.8,
-                duration: 0.4
-              });
-            }
-
-            if (priceBadge) {
-              gsap.to(priceBadge, {
-                scale: 1,
-                y: 0,
-                duration: 0.3
-              });
-            }
-
-            if (starIcon) {
-              gsap.to(starIcon, {
-                scale: 1,
-                rotation: 0,
-                duration: 0.5
-              });
-            }
-          };
-
-          // Mouse move 3D tilt effect (desktop only)
-          const handleMouseMove = (e: MouseEvent) => {
-            if (window.innerWidth < 768) return; // Skip on mobile
-            
-            const rect = cardElement.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = (y - centerY) / 10;
-            const rotateY = (centerX - x) / 10;
-
-            gsap.to(cardElement, {
-              rotationX: -rotateX,
-              rotationY: rotateY,
-              duration: 0.5,
-              ease: "power2.out",
-              transformPerspective: 1000
-            });
-          };
-
-          // Touch interactions for mobile
-          const handleTouchStart = () => {
-            gsap.to(cardElement, {
-              scale: 0.95,
-              duration: 0.2,
-              ease: "power2.out"
-            });
-          };
-
-          const handleTouchEnd = () => {
-            gsap.to(cardElement, {
-              scale: 1,
-              duration: 0.3,
-              ease: "back.out(2)"
-            });
-          };
-
-          // Add event listeners
-          cardElement.addEventListener('mouseenter', handleMouseEnter);
-          cardElement.addEventListener('mouseleave', handleMouseLeave);
-          cardElement.addEventListener('mousemove', handleMouseMove);
-          cardElement.addEventListener('touchstart', handleTouchStart);
-          cardElement.addEventListener('touchend', handleTouchEnd);
-
-          // Floating animation (subtle continuous movement)
-          gsap.to(cardElement, {
-            y: "+=10",
-            duration: 2 + index * 0.2,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-            delay: index * 0.1
-          });
-        });
-      }
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
+  const displayedItems = menuItems.slice(0, visibleItems);
 
   return (
-    <section id="menu" ref={sectionRef} className="py-16 md:py-24 bg-secondary relative overflow-hidden">
-      {/* Animated Food Decorative Elements */}
-      <div className="absolute top-20 -left-20 w-64 h-64 opacity-20 animate-float" style={{ animationDelay: '0s' }}>
-        <img src={rendangImage} alt="" className="w-full h-full object-cover rounded-full blur-sm" />
-      </div>
-      <div className="absolute top-1/2 -right-20 w-72 h-72 opacity-15 animate-float" style={{ animationDelay: '1s' }}>
-        <img src={sateImage} alt="" className="w-full h-full object-cover rounded-full blur-sm" />
-      </div>
-      <div className="absolute bottom-20 left-10 w-56 h-56 opacity-20 animate-float" style={{ animationDelay: '2s' }}>
-        <img src={nasigorengImage} alt="" className="w-full h-full object-cover rounded-full blur-sm" />
-      </div>
-      
-      {/* Floating Food Icons with Scroll Animation */}
-      <div ref={(el) => {
-        if (el && sectionRef.current) {
-          gsap.set(el.children, { x: -100, opacity: 0, rotation: -45 });
-          gsap.to(el.children, {
-            x: 0,
-            opacity: 0.3,
-            rotation: 0,
-            duration: 1.5,
-            stagger: 0.2,
-            ease: "back.out(1.5)",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 70%",
-              toggleActions: "play none none reverse"
-            }
-          });
-        }
-      }} className="absolute left-0 top-1/4 space-y-8 pointer-events-none hidden md:block">
-        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/30 shadow-gold-glow animate-float">
-          <img src={ayamgorengImage} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-primary/30 shadow-gold-glow animate-float" style={{ animationDelay: '0.5s' }}>
-          <img src={sotoImage} alt="" className="w-full h-full object-cover" />
-        </div>
-      </div>
-
-      <div ref={(el) => {
-        if (el && sectionRef.current) {
-          gsap.set(el.children, { x: 100, opacity: 0, rotation: 45 });
-          gsap.to(el.children, {
-            x: 0,
-            opacity: 0.3,
-            rotation: 0,
-            duration: 1.5,
-            stagger: 0.2,
-            ease: "back.out(1.5)",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 70%",
-              toggleActions: "play none none reverse"
-            }
-          });
-        }
-      }} className="absolute right-0 top-1/3 space-y-8 pointer-events-none hidden md:block">
-        <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-primary/30 shadow-gold-glow animate-float" style={{ animationDelay: '0.3s' }}>
-          <img src={gadogadoImage} alt="" className="w-full h-full object-cover" />
-        </div>
-        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/30 shadow-gold-glow animate-float" style={{ animationDelay: '0.8s' }}>
-          <img src={rendangImage} alt="" className="w-full h-full object-cover" />
-        </div>
-      </div>
-
+    <section id="menu" className="py-16 md:py-24 bg-secondary relative overflow-hidden">
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Header */}
-        <div ref={headerRef} className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-12 md:mb-16">
           <p className="text-primary font-semibold tracking-wide uppercase text-sm mb-2">Menu Unggulan</p>
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
             Hidangan <span className="text-gradient">Istimewa</span> Kami
@@ -376,49 +123,51 @@ export const MenuHighlight = () => {
         </div>
 
         {/* Menu Grid */}
-        <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-          {menuItems.map((item, index) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+          {displayedItems.map((item, index) => (
             <Card
               key={index}
               onClick={() => handleItemClick(item)}
-              className="group overflow-hidden bg-card cursor-pointer border-border/50 will-change-transform"
-              style={{ transformStyle: 'preserve-3d' }}
+              className="group overflow-hidden bg-card cursor-pointer border-border/50"
             >
               {/* Image */}
               <div className="relative overflow-hidden aspect-square">
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-full object-cover will-change-transform"
+                  className="w-full h-full object-cover"
                 />
                 
-                {/* Shimmer overlay effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
-                
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-all duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
                 {/* Price Badge */}
                 <div className="absolute bottom-2 left-2 bg-primary/90 backdrop-blur-sm text-primary-foreground px-2 py-1 rounded-lg text-xs font-semibold shadow-lg">
                   {item.price}
                 </div>
-
-                {/* Hover Icon */}
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="bg-white/20 backdrop-blur-sm p-2 rounded-full">
-                    <Star className="w-4 h-4 text-primary" fill="currentColor" />
-                  </div>
-                </div>
               </div>
 
               {/* Content */}
               <div className="p-2 md:p-3">
-                <h3 className="text-xs md:text-sm font-bold group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                <h3 className="text-xs md:text-sm font-bold line-clamp-2">
                   {item.name}
                 </h3>
               </div>
             </Card>
           ))}
         </div>
+
+        {/* Load More Button - Mobile Only */}
+        {visibleItems < menuItems.length && (
+          <div className="flex justify-center mt-8 md:hidden">
+            <Button 
+              onClick={handleLoadMore}
+              variant="outline"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              Tampilkan Lebih Banyak
+            </Button>
+          </div>
+        )}
 
         {/* Modal */}
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
